@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/relative_layout_gui"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#31ba9e"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ll_guide_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/container_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <include
+                android:id="@+id/toolbar"
+                layout="@layout/toolbar" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/pager_gui"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"/>
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.viewpagerindicator.CirclePageIndicator
+            android:id="@+id/indicator_gui"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/base_6"
+            android:background="@android:color/transparent"
+            android:padding="@dimen/base_8"
+            app:radius="4dp"
+            app:strokeColor="@color/mdtp_white"
+            app:strokeWidth="1dp" />
+
+        <Button
+            android:id="@+id/but_next"
+            android:layout_width="100dp"
+            android:layout_height="32dp"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/button_round_black_normal"
+            android:gravity="center"
+            android:text="Next"
+            android:textColor="@color/mdtp_white" />
+
+        <Button
+            android:id="@+id/but_skip"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="@dimen/base_6"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:text="Skip"
+            android:textColor="@color/mdtp_white" />
+    </LinearLayout>
+
+</RelativeLayout>

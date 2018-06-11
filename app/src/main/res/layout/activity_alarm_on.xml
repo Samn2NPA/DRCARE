@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.tvnsoftware.drcare.activity.Alarm.AlarmONActivity">
+
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:src="@drawable/ic_alarm"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/base_72"
+        android:layout_marginBottom="@dimen/base_72"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Remember to take medicine"
+        android:layout_gravity="center"
+        style="@style/Base.TextAppearance.AppCompat.Medium"/>
+    <Button
+        android:id="@+id/btnAlarmOFF"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_40"
+        android:text="ALARM OFF"
+        android:textStyle="bold"
+        android:textColor="@color/primary_dark" />
+
+</LinearLayout>
+

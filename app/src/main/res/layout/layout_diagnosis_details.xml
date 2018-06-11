@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabBookDate"
+        android:layout_margin="16dp"
+        app:fabSize="normal"
+        android:src="@drawable/ic_message"
+        app:backgroundTint="@color/dark_cyan"
+        app:layout_anchorGravity="end|bottom"
+        app:layout_anchor="@+id/llDiagnosisDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:id="@+id/llDiagnosisDetails"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="@dimen/space_large"
+        android:layout_marginStart="@dimen/space_large"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/background_extra_light"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp">
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_medium"
+                android:layout_weight="1"
+                android:text="Diagnosis" />
+
+            <TextView
+                android:id="@+id/tvDiagnosis_patient"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:padding="4dp"
+                android:text="Cancer" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView2"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_medium"
+            android:layout_marginTop="@dimen/space_large"
+            android:text="Doctor" />
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            app:cardBackgroundColor="@color/background_extra_light"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="3dp"
+            app:cardPreventCornerOverlap="false">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/ivDoctorCover"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:adjustViewBounds="true"
+                    android:paddingLeft="10dp"
+                    tools:src="@drawable/res_patient" />
+
+                <TextView
+                    android:id="@+id/tvDoctorName"
+                    style="@style/LightHeadlineTextStyle"
+                    fontPath="fonts/NexaBold.otf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/space_medium"
+                    android:layout_marginTop="@dimen/space_medium"
+                    android:layout_toEndOf="@+id/ivDoctorCover"
+                    android:textColor="@color/mdtp_transparent_black"
+                    android:textSize="@dimen/space_large"
+                    tools:ignore="MissingPrefix"
+                    tools:text="John Cena" />
+
+                <TextView
+                    android:id="@+id/tvDoctorEspecial"
+                    style="@style/LightHeadlineTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tvDoctorName"
+                    android:layout_marginStart="@dimen/space_medium"
+                    android:layout_toEndOf="@+id/ivDoctorCover"
+                    android:textColor="@color/mdtp_transparent_black"
+                    tools:text="ABC1234" />
+
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_medium"
+            android:layout_marginTop="@dimen/space_large">
+
+            <ImageView
+                android:layout_width="@dimen/base_48"
+                android:layout_height="@dimen/base_48"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/ic_rx" />
+
+            <!--<ImageView
+                android:id="@+id/ivSetAlarm_patient"
+                android:layout_width="@dimen/base_40"
+                android:layout_height="@dimen/base_40"
+                android:src="@drawable/ic_alarm"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"/>-->
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/space_medium"
+            android:layout_marginStart="@dimen/space_medium"
+            android:layout_marginTop="@dimen/space_medium">
+
+            <TextView
+                android:id="@+id/name"
+                style="@style/Base.TextAppearance.AppCompat.Body2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="Name" />
+
+            <include layout="@layout/divide_vertical" />
+
+            <TextView
+                android:id="@+id/qty"
+                style="@style/Base.TextAppearance.AppCompat.Body2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Qty" />
+
+            <include layout="@layout/divide_vertical" />
+
+            <TextView
+                android:id="@+id/unit"
+                style="@style/Base.TextAppearance.AppCompat.Body2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Unit" />
+
+            <include layout="@layout/divide_vertical" />
+
+            <TextView
+                android:id="@+id/usage"
+                style="@style/Base.TextAppearance.AppCompat.Body2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:text="Usage" />
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rc_prescription"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/base_64"></android.support.v7.widget.RecyclerView>
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

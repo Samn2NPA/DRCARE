@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "878742751329",
+    "firebase_url": "https://drcareandroid.firebaseio.com",
+    "project_id": "drcareandroid",
+    "storage_bucket": "drcareandroid.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:878742751329:android:f7d1eeecf7736478",
+        "android_client_info": {
+          "package_name": "com.tvnsoftware.drcare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "878742751329-ujr26mr7hsrfdkjpt617mih28ml4564s.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "878742751329-ujr26mr7hsrfdkjpt617mih28ml4564s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuIOUTSYG4DTz7ajXnWzSVqnQjYyIwLbE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

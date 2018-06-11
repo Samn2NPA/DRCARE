@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--<color name="colorPrimary">#3F51B5</color>-->
+    <!--<color name="colorPrimaryDark">#303F9F</color>-->
+    <!--<color name="colorAccent">#FF4081</color>-->
+    <!--<color name="black">#000000</color>-->
+    <!--<color name="bg_line_input_login">#E5DDCB</color>-->
+    <!--<color name="main_bg">#ffffff</color>-->
+    <color name="primary">#607D8B</color>
+    <color name="primary_dark">#455A64</color>
+    <color name="primary_darkest">#263137</color>
+    <color name="primary_dark_grayish">#303f46</color>
+    <color name="primary_light">#CFD8DC</color>
+    <color name="accent">#FFC107</color>
+    <color name="accent_light">#ffea07</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#757575</color>
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#BDBDBD</color>
+    <color name="base">#FAFAFA</color>
+    <color name="colorPrimaryOpacity">#CC639310</color>
+
+    <!--color new-->
+    <color name="background_basic">#31ba9e</color>
+    <color name="background_light">#4ed0b6</color>
+    <color name="background_extra_light">#c6f0e8</color>
+    <color name="background_lightest">#b2ebe0</color>
+    <color name="light_grayish_cyan">#effbf8</color>
+
+    <!--color of letter-->
+    <color name="dark_cyan">#2ca68d</color>
+    <color name="darker_cyan">#208168</color>
+</resources>
