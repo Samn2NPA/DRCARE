@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void prepareData(){
-        if(stateByRole == ROLE_STATE.DOCTOR){
+        /*if(stateByRole == ROLE_STATE.DOCTOR){
             List<MedicalRecord> MR = MedicalRecord.fetchRecordForDoctor();
             Log.d("MainActivity: ", "TEST -- Prepare Data for DOCTOR: MR = " + MR.size());
             doctorAdapter.setData(MedicalRecord.fetchRecordForDoctor()); //todo: async
@@ -143,7 +143,14 @@ public class MainActivity extends AppCompatActivity {
             List<MedicalRecord> MR = MedicalRecord.getMRHistoryList();
             Log.d("MainActivity: ", "TEST -- Prepare Data for PATIENT: MR = " + MR.size());
             doctorAdapter.setData(MR);
-        }
+        }*/
+
+        new MedicalRecord(stateByRole, new MedicalRecord.Listener() {
+            @Override
+            public void onFetchSuccess(List<MedicalRecord> resultList) {
+                doctorAdapter.setData(resultList);
+            }
+        });
     }
 
     protected void applyFontForToolbarTitle(Toolbar toolbar) {

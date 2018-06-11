@@ -5,12 +5,11 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
-import com.tvnsoftware.drcare.R;
-import com.tvnsoftware.drcare.model.users.User;
+import com.tvnsoftware.drcare.adapter.ROLE_STATE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +36,16 @@ public class MedicalRecord implements Parcelable {
 
     private static List<MedicalRecord> patientList;
     private static List<MedicalRecord> medicalList;
-    
+
+    private Listener listener;
+
+    public interface Listener{
+        void onFetchSuccess(List<MedicalRecord> resultList);
+    }
+
+    public void setListener(Listener listener){
+        this.listener = listener;
+    }
 
     protected MedicalRecord(Parcel in) {
         isTaken = in.readInt();
@@ -82,6 +90,14 @@ public class MedicalRecord implements Parcelable {
     public MedicalRecord() {
     }
 
+    public MedicalRecord(ROLE_STATE role, Listener listener){
+        this.listener = listener;
+        if(role == ROLE_STATE.DOCTOR)
+            fetchRecordForDoctor();
+        else
+            fetchRecordForPatient();
+    }
+
     public MedicalRecord(int isTaken, String doctorKey, String patientKey, String diseaseName, String dayCreated) {
         this.isTaken = isTaken;
         DoctorKey = doctorKey;
@@ -106,12 +122,12 @@ public class MedicalRecord implements Parcelable {
         return DayCreated;
     }
 
-    public static List<MedicalRecord> getPatientList() {
+    /*public static List<MedicalRecord> getPatientList() {
         patientList = new ArrayList<>();
         return fetchRecordForDoctor();
-    }
+    }*/
 
-    public static List<MedicalRecord> fetchRecordForDoctor(){
+    private void fetchRecordForDoctor(){
         patientList = new ArrayList<>();
         dbRefer.child(MEDICAL_RECORDS_CHILD)
                 .addValueEventListener(new ValueEventListener() {
@@ -127,6 +143,8 @@ public class MedicalRecord implements Parcelable {
                         }
 
                         Log.d("TEST","patient sizxe: " + patientList.size());
+
+                        listener.onFetchSuccess(patientList);
                     }
 
                     @Override
@@ -134,10 +152,9 @@ public class MedicalRecord implements Parcelable {
                         Log.w(TAG,"Medical Record::onCancelled", databaseError.toException());
                     }
                 });
-        return patientList;
     }
 
-    private static void fetchRecordForPatient(){
+    private void fetchRecordForPatient(){
         dbRefer.child(MEDICAL_RECORDS_CHILD)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
@@ -148,8 +165,10 @@ public class MedicalRecord implements Parcelable {
                             medRec.setKey(child.getKey());
 
                             if(medRec.getIsTaken() == 1)
-                                patientList.add(medRec);
+                                medicalList.add(medRec);
                         }
+
+                        listener.onFetchSuccess(medicalList);
                     }
 
                     @Override
@@ -174,11 +193,11 @@ public class MedicalRecord implements Parcelable {
 
 
 
-    public static List<MedicalRecord> getMRHistoryList() {
+    /*public static List<MedicalRecord> getMRHistoryList() {
         medicalList = new ArrayList<>();
         fetchRecordForPatient();
         return medicalList;
-    }
+    }*/
 
 
     @Override
