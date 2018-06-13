@@ -2,7 +2,9 @@ package com.tvnsoftware.drcare.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.tvnsoftware.drcare.Utils.Constants.DOCTOR_NAME;
+import static com.tvnsoftware.drcare.Utils.Constants.EXTRA_DOCTOR;
+import static com.tvnsoftware.drcare.Utils.Constants.EXTRA_PATIENT;
 import static com.tvnsoftware.drcare.Utils.Constants.PATIENT_CODE;
 import static com.tvnsoftware.drcare.Utils.Constants.PATIENT_NAME;
 import static com.tvnsoftware.drcare.Utils.Constants.PATIENT_STATUS;
@@ -91,9 +95,10 @@ public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.ViewHolder
     private void BindView_PatientScreen(ViewHolder holder, final MedicalRecord medicalRecord) {
         holder.tvPatientName.setText(medicalRecord.getDiseaseName());
         holder.tvPatientCode.setText("Doctor: " + User.getUserByKey(medicalRecord.getDoctorKey()).getUserName());
-        holder.tvPatientStatus.setText("Date: " + medicalRecord.getDayCreated());
-        holder.tv_patient_time.setVisibility(View.GONE);
-        Glide.with(context).load(User.getUserByKey(medicalRecord.getDoctorKey()).getUserImage())
+        holder.tvPatientStatus.setText("Diagnosis: " + medicalRecord.getDiseaseName());
+        holder.tv_patient_time.setText(medicalRecord.getDayCreated());
+
+        Glide.with(context).load(User.getUserByKey(medicalRecord.getDoctorKey()).getUserImage()) //User.getUserByKey(medicalRecord.getDoctorKey()).getUserImage()
                 .thumbnail(0.5f)
                 .crossFade()
                 .placeholder(R.mipmap.ic_launcher)
@@ -104,10 +109,12 @@ public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.ViewHolder
     }
 
     private void BindView_DoctorScreen(ViewHolder holder, final MedicalRecord medicalRecord) {
+
         holder.tvPatientName.setText(User.getUserByKey(medicalRecord.getPatientKey()).getUserName());
         holder.tvPatientCode.setText("ID: " + User.getUserByKey(medicalRecord.getPatientKey()).getUserCode());
         holder.tvPatientStatus.setText("Status: " + medicalRecord.getMedRecStatus());
-        Glide.with(context).load(User.getUserByKey(medicalRecord.getPatientKey()).getUserImage())
+
+        Glide.with(context).load(User.getUserByKey(medicalRecord.getPatientKey()).getUserImage()) //User.getUserByKey(medicalRecord.getPatientKey()).getUserImage()
                 .thumbnail(0.5f)
                 .crossFade()
                 .placeholder(R.mipmap.ic_launcher)
@@ -218,10 +225,10 @@ public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.ViewHolder
         Intent intent;
         if(stateByRole == ROLE_STATE.PATIENT){
             intent = new Intent(context, DiagnosisDetailActivity.class);
-            intent.putExtra(DiagnosisDetailActivity.EXTRA_PATIENT, medRec);
+            intent.putExtra(EXTRA_PATIENT, medRec);
         } else{
             intent = new Intent(context, DiagnosisActivity.class);
-            intent.putExtra(DiagnosisActivity.EXTRA_DOCTOR, medRec);
+            intent.putExtra(EXTRA_DOCTOR, medRec);
         }
         context.startActivity(intent);
     }

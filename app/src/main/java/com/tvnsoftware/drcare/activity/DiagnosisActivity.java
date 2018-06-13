@@ -3,6 +3,7 @@ package com.tvnsoftware.drcare.activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -20,16 +21,26 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.tvnsoftware.drcare.R;
 import com.tvnsoftware.drcare.Utils.DividerItemDecoration;
 import com.tvnsoftware.drcare.adapter.DiagnosisAdapter;
 import com.tvnsoftware.drcare.model.medicalrecord.MedicalRecord;
+import com.tvnsoftware.drcare.model.medicalrecord.Prescription;
 import com.tvnsoftware.drcare.model.users.Medicine;
+import com.tvnsoftware.drcare.model.users.User;
+
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import static com.tvnsoftware.drcare.Utils.Constants.EXTRA_PATIENT;
+import static com.tvnsoftware.drcare.Utils.Constants.PRESCRIPTION_CHILD;
+import static com.tvnsoftware.drcare.activity.LoginActivity.dbRefer;
 
 /**
  * Created by Admin on 7/26/2017.
@@ -41,7 +52,6 @@ public class DiagnosisActivity extends AppCompatActivity {
     private DiagnosisAdapter diagnosisAdapter;
     private MedicalRecord medicalRecord;
 
-    public static final String EXTRA_DOCTOR = "EXTRA_DOCTOR";
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -74,7 +84,9 @@ public class DiagnosisActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 recyclerView.setVisibility(View.VISIBLE);
-                addPrescription();
+                addPrescription(Medicine.getMedKeyByName(etMedicine.getText().toString()),
+                                            Integer.parseInt(etQuantity.getText().toString()),
+                                            Integer.parseInt(etTimes.getText().toString()), "Note");
                 etMedicine.setText("");
                 etTimes.setText("");
                 etQuantity.setText("");
@@ -96,8 +108,8 @@ public class DiagnosisActivity extends AppCompatActivity {
     }
 
     private void prepareData(){
-        medicalRecord = getIntent().getParcelableExtra("patient");
-        tvPatientName.setText("Tesst name");//medicalRecord.getPatientName());
+        medicalRecord = getIntent().getParcelableExtra(EXTRA_PATIENT);
+        tvPatientName.setText(User.getUserByKey(medicalRecord.getPatientKey()).getUserName());//medicalRecord.getPatientName());
         etMedicine.addTextChangedListener(mTextWatcher);
         etTimes.addTextChangedListener(mTextWatcher);
         etQuantity.addTextChangedListener(mTextWatcher);
@@ -146,11 +158,30 @@ public class DiagnosisActivity extends AppCompatActivity {
         }
     }
 
-    private void addPrescription(){
-        Medicine medicine = new Medicine(etMedicine.getText().toString().trim(), etQuantity.getText().toString().trim() + " pills",
-                etTimes.getText().toString().trim() + " time(s)/day");
-        diagnosisAdapter.add(medicine);
+    private void addPrescription(String medicineKey, int medicineQty, int timeTake, String note){
+        writeNewPrescription(medicalRecord.getKey(), medicineKey, medicineQty, timeTake, note);
+        //diagnosisAdapter.add(medicine);
         Toast.makeText(getBaseContext(), "Added successfully", Toast.LENGTH_SHORT).show();
+    }
+
+    private void writeNewPrescription(String medRecKey, String medicineKey, int medicineQty, int timeTake, String note){
+
+        Prescription newPresc = new Prescription(medRecKey, medicineKey, medicineQty, timeTake, note);
+        Map<String, Object> postValue = newPresc.toMap();
+
+        dbRefer.child(PRESCRIPTION_CHILD).push().setValue(postValue)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(getApplicationContext(), "OnSuccess create Prescription", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     protected void applyFontForToolbarTitle(Toolbar toolbar) {

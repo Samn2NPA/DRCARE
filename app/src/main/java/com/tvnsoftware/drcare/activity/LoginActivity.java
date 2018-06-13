@@ -27,6 +27,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static com.tvnsoftware.drcare.Application.users;
+import static com.tvnsoftware.drcare.Utils.Constants.CURRENT_USER_KEY;
 
 public class LoginActivity extends AppCompatActivity {
     private final String TAG = "MainActivity";
@@ -103,31 +104,21 @@ public class LoginActivity extends AppCompatActivity {
         if (inputCode.isEmpty() || inputCode.length() == 0 || inputCode.equals("") || inputCode == null)
             Toast.makeText(this, "Please enter UserID to login", Toast.LENGTH_SHORT).show();
         else {
-            boolean isUser = false;
-            int roleID = 1;
-            for (User user : userList) {
-                if (user.getUserCode().equalsIgnoreCase(inputCode)) {
-                    //check role
-                    roleID = user.getRoleID();
-                    isUser = true;
-                    break;
-                }
-            }
-            if (User.checkIsUser(inputCode.toLowerCase(), userList)) {
-                if (isUser) {
-                    Intent i = new Intent(LoginActivity.this,MainActivity.class);
-                    int getRoleID; //= User.checkRole(inputCode.toLowerCase(), userList);
-                    //getRoleID = 2;
 
-                    Log.d(TAG, "TEST: role ID = " + roleID);
+            //roleID = 1: patient     || roleID = 0: doctor      || roleID = -1: login failed
+            int roleID = User.checkIsUser(inputCode.toLowerCase(), userList);
+
+            switch (roleID){
+                case -1: Toast.makeText(this, "Wrong User ID!", Toast.LENGTH_SHORT).show();
+                        edtLoginId.setText("");
+                        break;
+                default: Intent i = new Intent(LoginActivity.this,MainActivity.class);
+                    CURRENT_USER_KEY = User.getKeyByUserCode(inputCode);
+                    Log.d(TAG, "TEST: role ID = " + roleID + " || CURRENT_USER_KEY :: " + CURRENT_USER_KEY);
                     i.putExtra(EXTRA_ROLE, roleID);
 
                     startActivity(i);
                     finish();
-                } else {
-                    Toast.makeText(this, "Wrong User ID!", Toast.LENGTH_SHORT).show();
-                    edtLoginId.setText("");
-                }
             }
         }
     }

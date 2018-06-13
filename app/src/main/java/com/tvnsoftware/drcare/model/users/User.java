@@ -1,8 +1,10 @@
 package com.tvnsoftware.drcare.model.users;
 
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.bumptech.glide.load.engine.Resource;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -50,9 +52,9 @@ public class User {
     private String Key;
     private int RoleID;
     private String UserName;
-    private String UserImage;
+    private int UserImage;
     private String UserCode;
-    private String doctorSpecial;
+    private String Special;
 
     private static List<User> userList;
 
@@ -128,32 +130,38 @@ public class User {
 
     public static User getUserByKey(String key){
         for (User item : userList){
-            if (item.getKey() == key)
+            if (item.getKey().equals(key))
                 return item;
         }
         return new User();
     }
 
-    public static boolean checkIsUser(String user_code, List<User> userList){
-        int isUser = 0;
-        for (User user : userList){
-            if(user.getUserCode().toLowerCase().equals(user_code)){
-                isUser = 1;
-                break;
-            }
+    public static String getKeyByUserCode(String inputCode){
+        for (User item : userList){
+            if (item.getUserCode().equalsIgnoreCase(inputCode))
+                return item.getKey();
         }
-        return (isUser == 1)? true : false;
+        return "KeyNull";
     }
 
-    public static int checkRole(String user_code, List<User> userList){
-        int Role = 1;
+    /**
+     * Vừa check IsUser, vừa lấy được RoleID
+     *
+     * roleID = 1: patient     || roleID = 0: doctor      || roleID = -1: login failed
+     *
+     * @param user_code: input code (tên đăng nhập)
+     * @param userList
+     * @return roleID
+     */
+    public static int checkIsUser(String user_code, List<User> userList){
+        int roleID = -1;  //roleID = 1: patient     || roleID = 0: doctor      || roleID = -1: login failed
         for (User user : userList){
-            if(user.getUserCode().toLowerCase().equals(user_code)){
-                //Role = user.getRoleID();
+            if(user.getUserCode().equalsIgnoreCase(user_code)){
+                roleID = user.getRoleID();
                 break;
             }
         }
-        return Role;
+        return roleID;
     }
 
     public static String getDoctorSpecial(int userID) {
@@ -183,12 +191,12 @@ public class User {
         return UserName;
     }
 
-    public String getUserImage() {
+    public int getUserImage() {
         return UserImage;
     }
 
-    public String getDoctorSpecial() {
-        return doctorSpecial;
+    public String getSpecial() {
+        return Special;
     }
 
     /**

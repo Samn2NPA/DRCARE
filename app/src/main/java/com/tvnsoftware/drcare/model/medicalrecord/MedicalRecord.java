@@ -8,11 +8,13 @@ import android.util.Log;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.tvnsoftware.drcare.R;
 import com.tvnsoftware.drcare.adapter.ROLE_STATE;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.tvnsoftware.drcare.Utils.Constants.CURRENT_USER_KEY;
 import static com.tvnsoftware.drcare.Utils.Constants.MEDICAL_RECORDS_CHILD;
 import static com.tvnsoftware.drcare.activity.LoginActivity.dbRefer;
 
@@ -138,11 +140,11 @@ public class MedicalRecord implements Parcelable {
                             MedicalRecord medRec = child.getValue(MedicalRecord.class);
                             medRec.setKey(child.getKey());
 
-                            if(medRec.getIsTaken() == 0)
+                            if(medRec.getIsTaken() == 0 && medRec.getDoctorKey().equals(CURRENT_USER_KEY))
                                 patientList.add(medRec);
                         }
 
-                        Log.d("TEST","patient sizxe: " + patientList.size());
+                        Log.d("TEST","patient sizxe: " + patientList.size() + "R.drawable.res_patient = " + R.drawable.res_patient);
 
                         listener.onFetchSuccess(patientList);
                     }
@@ -155,6 +157,7 @@ public class MedicalRecord implements Parcelable {
     }
 
     private void fetchRecordForPatient(){
+        medicalList = new ArrayList<>();
         dbRefer.child(MEDICAL_RECORDS_CHILD)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
@@ -164,9 +167,12 @@ public class MedicalRecord implements Parcelable {
                             MedicalRecord medRec = child.getValue(MedicalRecord.class);
                             medRec.setKey(child.getKey());
 
-                            if(medRec.getIsTaken() == 1)
+                            if(medRec.getIsTaken() == 1 && medRec.getDoctorKey().equals(CURRENT_USER_KEY)){
                                 medicalList.add(medRec);
+                                Prescription.fetchPrescriptionByMedRecKey(medRec.getKey()); //get PrescriptionList by each MedicalRecord of CURRENT_USER_KEY
+                            }
                         }
+                        Log.d("TEST","patient sizxe: " + medicalList.size());
 
                         listener.onFetchSuccess(medicalList);
                     }
@@ -181,23 +187,15 @@ public class MedicalRecord implements Parcelable {
     private static List<Prescription> pre() {
         List<Prescription> res = new ArrayList<>();
         for (int i = 1; i < 5; i++) {
-            Prescription prescription = new Prescription();
+            /*Prescription prescription = new Prescription();
             prescription.setName("Paracetamol " + i);
             prescription.setQuantity(10);
             prescription.setUnit("Gói");
             prescription.setUsage("2 times/day/1 unit");
-            res.add(prescription);
+            res.add(prescription);*/
         }
         return res;
     }
-
-
-
-    /*public static List<MedicalRecord> getMRHistoryList() {
-        medicalList = new ArrayList<>();
-        fetchRecordForPatient();
-        return medicalList;
-    }*/
 
 
     @Override

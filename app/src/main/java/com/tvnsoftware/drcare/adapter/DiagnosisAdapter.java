@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.tvnsoftware.drcare.R;
+import com.tvnsoftware.drcare.model.medicalrecord.Prescription;
 import com.tvnsoftware.drcare.model.users.Medicine;
 
 import java.util.ArrayList;
@@ -23,16 +24,16 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class DiagnosisAdapter extends RecyclerView.Adapter<DiagnosisAdapter.ViewHolder> {
 
-    private List<Medicine> medicines;
+    private List<Prescription> prescriptionList;
     private Context context;
 
     public DiagnosisAdapter(Context context) {
-        this.medicines = new ArrayList<>();
+        this.prescriptionList = new ArrayList<>();
         this.context = context;
     }
 
-    public void add(Medicine medicine){
-        this.medicines.add(medicine);
+    public void add(Prescription prescription){
+        this.prescriptionList.add(prescription);
         notifyDataSetChanged();
     }
 
@@ -45,10 +46,10 @@ public class DiagnosisAdapter extends RecyclerView.Adapter<DiagnosisAdapter.View
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        Medicine medicine = medicines.get(position);
-        holder.tvPrescriptionMedicine.setText(medicine.getMedicineName());
-        holder.tvPrescriptionQuantity.setText(medicine.getMedicineQuantity());
-        holder.tvPrescriptionTimes.setText(medicine.getMedicineTimesTaken());
+        Prescription prescription = prescriptionList.get(position);
+        holder.tvPrescriptionMedicine.setText(Medicine.getMedicineByKey(prescription.getMedicineKey()).getMedName());
+        holder.tvPrescriptionQuantity.setText(prescription.getMedicineQty());
+        holder.tvPrescriptionTimes.setText(prescription.getTimeTake());
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -88,7 +89,7 @@ public class DiagnosisAdapter extends RecyclerView.Adapter<DiagnosisAdapter.View
                 .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sDialog) {
-                        medicines.remove(position);
+                        prescriptionList.remove(position);
                         notifyItemRemoved(position);
                         notifyItemRangeRemoved(position, getItemCount());
                         sDialog.dismissWithAnimation();
@@ -99,7 +100,7 @@ public class DiagnosisAdapter extends RecyclerView.Adapter<DiagnosisAdapter.View
 
     @Override
     public int getItemCount() {
-        return medicines.size();
+        return prescriptionList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

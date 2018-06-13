@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         int getRoleID = getIntent().getIntExtra(EXTRA_ROLE, 1);
         doctorAdapter.setState(getRoleID);
 
-        stateByRole = (getRoleID == 1) ? ROLE_STATE.PATIENT : ROLE_STATE.DOCTOR;
+        stateByRole = (getRoleID == 1) ? ROLE_STATE.PATIENT : ROLE_STATE.DOCTOR;  //roleID = 1: patient     || roleID = 0: doctor      || roleID = -1: login failed
 
         prepareData();
 

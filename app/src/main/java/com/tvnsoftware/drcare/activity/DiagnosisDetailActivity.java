@@ -23,15 +23,17 @@ import com.tvnsoftware.drcare.R;
 import com.tvnsoftware.drcare.Utils.GlideCircleTransformation;
 import com.tvnsoftware.drcare.adapter.PrescriptionAdapter;
 import com.tvnsoftware.drcare.model.medicalrecord.MedicalRecord;
+import com.tvnsoftware.drcare.model.users.User;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.tvnsoftware.drcare.Utils.Constants.EXTRA_PATIENT;
+
 public class DiagnosisDetailActivity extends AppCompatActivity {
 
 
-    public static final String EXTRA_PATIENT = "EXTRA_PATIENT";
 
     private PrescriptionAdapter prescriptionAdapter;
     private LinearLayoutManager mLayoutManager;
@@ -83,16 +85,17 @@ public class DiagnosisDetailActivity extends AppCompatActivity {
 
     private void setUpView() {
         tvDiagnosis_patient.setText(medicalRecord.getDiseaseName());
-        tvDoctorName.setText("Test doctor name"); //(medicalRecord.getDoctorName());
-        tvDoctorEspecial.setText("Test Special");  //(medicalRecord.getDoctorSpecial());
-        /*Glide.with(this).load(//(medicalRecord.getDoctorPhoto())
+        tvDoctorName.setText(User.getUserByKey(medicalRecord.getDoctorKey()).getUserName());
+        tvDoctorEspecial.setText(User.getUserByKey(medicalRecord.getDoctorKey()).getSpecial());
+
+        Glide.with(this).load(User.getUserByKey(medicalRecord.getDoctorKey()).getUserImage())
                 .thumbnail(0.5f)
                 .crossFade()
                 .placeholder(R.mipmap.ic_launcher)
                 .error(R.mipmap.ic_launcher)
                 .bitmapTransform(new GlideCircleTransformation(this))
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(ivDoctorCover);*/
+                .into(ivDoctorCover);
     }
 
    /* @OnClick(R.id.ivSetAlarm_patient)

@@ -2,28 +2,39 @@ package com.tvnsoftware.drcare.model.users;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.util.Log;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.tvnsoftware.drcare.Utils.Constants.MEDICINE_CHILD;
+import static com.tvnsoftware.drcare.activity.LoginActivity.dbRefer;
 
 /**
  * Created by Admin on 7/26/2017.
  */
 
 public class Medicine implements Parcelable {
-    private String medicineName;
-    private String medicineQuantity;
-    private String medicineTimesTaken;
+    private final static String TAG = Medicine.class.getSimpleName();
+
+    private String key;
+    private String medName;
+    private String unit;
+
+    private static List<Medicine> medicineList;
 
     public Medicine(){}
 
-    public Medicine(String medicineName, String medicineQuantity, String medicineTimesTaken) {
-        this.medicineName = medicineName;
-        this.medicineQuantity = medicineQuantity;
-        this.medicineTimesTaken = medicineTimesTaken;
-    }
 
     protected Medicine(Parcel in) {
-        medicineName = in.readString();
-        medicineQuantity = in.readString();
-        medicineTimesTaken = in.readString();
+        key = in.readString();
+        medName = in.readString();
+        unit = in.readString();
     }
 
     public static final Creator<Medicine> CREATOR = new Creator<Medicine>() {
@@ -38,30 +49,6 @@ public class Medicine implements Parcelable {
         }
     };
 
-    public String getMedicineName() {
-        return medicineName;
-    }
-
-    public void setMedicineName(String medicineName) {
-        this.medicineName = medicineName;
-    }
-
-    public String getMedicineQuantity() {
-        return medicineQuantity;
-    }
-
-    public void setMedicineQuantity(String medicineQuantity) {
-        this.medicineQuantity = medicineQuantity;
-    }
-
-    public String getMedicineTimesTaken() {
-        return medicineTimesTaken;
-    }
-
-    public void setMedicineTimesTaken(String medicineTimesTaken) {
-        this.medicineTimesTaken = medicineTimesTaken;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -69,8 +56,61 @@ public class Medicine implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(medicineName);
-        dest.writeString(medicineQuantity);
-        dest.writeString(medicineTimesTaken);
+        dest.writeString(key);
+        dest.writeString(medName);
+        dest.writeString(unit);
+    }
+
+    private static void fetchMedicine(){
+        medicineList = new ArrayList<>();
+        dbRefer.child(MEDICINE_CHILD)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot child : dataSnapshot.getChildren() ){
+                            Medicine med = child.getValue(Medicine.class);
+                            med.setKey(child.getKey());
+                            medicineList.add(med);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.w(TAG,"User::onCancelled", databaseError.toException());
+                    }
+                });
+    }
+
+    public static Medicine getMedicineByKey(String medicineKey) {
+        for (Medicine item: medicineList) {
+            if (item.getKey().equals(medicineKey))
+                return item;
+        }
+        return new Medicine();
+    }
+
+    public static String getMedKeyByName(String medName){
+        for(Medicine item : medicineList)
+            if (item.getMedName().equalsIgnoreCase(medName))
+                return item.getKey();
+        return "KeyNull";
+    }
+
+
+    public String getKey() {
+        return key;
+    }
+
+    public String getMedName() {
+        return medName;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }
