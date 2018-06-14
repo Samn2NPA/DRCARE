@@ -48,8 +48,8 @@ public class DiagnosisAdapter extends RecyclerView.Adapter<DiagnosisAdapter.View
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         Prescription prescription = prescriptionList.get(position);
         holder.tvPrescriptionMedicine.setText(Medicine.getMedicineByKey(prescription.getMedicineKey()).getMedName());
-        holder.tvPrescriptionQuantity.setText(prescription.getMedicineQty());
-        holder.tvPrescriptionTimes.setText(prescription.getTimeTake());
+        holder.tvPrescriptionQuantity.setText(prescription.getMedicineQty() + " viên");
+        holder.tvPrescriptionTimes.setText(prescription.getTimeTake() + " time(s)/day");
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -60,28 +60,6 @@ public class DiagnosisAdapter extends RecyclerView.Adapter<DiagnosisAdapter.View
     }
 
     private void confirmOnRemove(ViewHolder holder, final int position){
-//        AlertDialog.Builder alert = new AlertDialog.Builder(
-//                holder.tvPrescriptionMedicine.getContext());
-//        alert.setTitle("Confirmation!!");
-//        alert.setMessage("Are you sure to delete this record ?");
-//        alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-//
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                medicines.remove(position);
-//                notifyItemRemoved(position);
-//                notifyItemRangeRemoved(position, getItemCount());
-//                dialog.dismiss();
-//            }
-//        });
-//        alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                dialog.dismiss();
-//            }
-//        });
-//        alert.show();
-
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
                 .setTitleText("Are you sure?")
                 .setContentText("Won't be able to recover this")
@@ -92,6 +70,13 @@ public class DiagnosisAdapter extends RecyclerView.Adapter<DiagnosisAdapter.View
                         prescriptionList.remove(position);
                         notifyItemRemoved(position);
                         notifyItemRangeRemoved(position, getItemCount());
+                        sDialog.dismissWithAnimation();
+                    }
+                })
+                .setCancelText("No, don't.")
+                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
                         sDialog.dismissWithAnimation();
                     }
                 });

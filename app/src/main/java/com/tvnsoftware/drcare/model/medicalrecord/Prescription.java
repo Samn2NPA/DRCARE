@@ -29,19 +29,17 @@ public class Prescription implements Parcelable {
     private String MedicineKey;
     private int MedicineQty;
     private int TimeTake;
-    private String Note;
 
     private static List<Prescription> prescriptionList;
 
     public Prescription() {
     }
 
-    public Prescription(String medRecKey, String medicineKey, int medicineQty, int timeTake, String note) {
+    public Prescription(String medRecKey, String medicineKey, int medicineQty, int timeTake) {
         MedRecKey = medRecKey;
         MedicineKey = medicineKey;
         MedicineQty = medicineQty;
         TimeTake = timeTake;
-        Note = note;
     }
 
     protected Prescription(Parcel in) {
@@ -50,8 +48,6 @@ public class Prescription implements Parcelable {
         MedicineKey = in.readString();
         MedicineQty = in.readInt();
         TimeTake = in.readInt();
-        Note = in.readString();
-        prescriptionList = in.createTypedArrayList(Prescription.CREATOR);
     }
 
 
@@ -67,7 +63,7 @@ public class Prescription implements Parcelable {
         }
     };
 
-    public static void fetchPrescriptionByMedRecKey(final String MedRecKey){
+    public static List<Prescription> fetchPrescriptionByMedRecKey(final String MedRecKey){
         prescriptionList = new ArrayList<>();
         dbRefer.child(PRESCRIPTION_CHILD)
                 .addValueEventListener(new ValueEventListener() {
@@ -89,6 +85,7 @@ public class Prescription implements Parcelable {
                         Log.w(TAG,"Medical Record::onCancelled", databaseError.toException());
                     }
                 });
+        return prescriptionList;
     }
 
     public Map<String, Object> toMap(){
@@ -97,7 +94,6 @@ public class Prescription implements Parcelable {
         result.put("MedicineKey",MedicineKey);
         result.put("MedicineQty",MedicineQty);
         result.put("TimeTake",TimeTake);
-        result.put("Note",Note);
         return result;
     }
 
@@ -125,10 +121,6 @@ public class Prescription implements Parcelable {
         return TimeTake;
     }
 
-    public String getNote() {
-        return Note;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -141,7 +133,5 @@ public class Prescription implements Parcelable {
         dest.writeString(MedicineKey);
         dest.writeInt(MedicineQty);
         dest.writeInt(TimeTake);
-        dest.writeString(Note);
-        dest.writeTypedList(prescriptionList);
     }
 }

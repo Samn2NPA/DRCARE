@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Preconditions;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.transition.Fade;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +33,9 @@ import com.tvnsoftware.drcare.model.medicalrecord.Prescription;
 import com.tvnsoftware.drcare.model.users.Medicine;
 import com.tvnsoftware.drcare.model.users.User;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -38,11 +43,19 @@ import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+import static com.tvnsoftware.drcare.Utils.Constants.ALREADY_TAKEN;
+import static com.tvnsoftware.drcare.Utils.Constants.EXTRA_MED_REC;
 import static com.tvnsoftware.drcare.Utils.Constants.EXTRA_PATIENT;
+import static com.tvnsoftware.drcare.Utils.Constants.MEDICAL_RECORDS_CHILD;
 import static com.tvnsoftware.drcare.Utils.Constants.PRESCRIPTION_CHILD;
 import static com.tvnsoftware.drcare.activity.LoginActivity.dbRefer;
 
 /**
+ * This activity allow DOCTOR make diagnosis for patient.
+ * When DOCTOR click btnDone on Toolbar. There are 2 updates:
+ * 1. update diagnosis
+ * 2. add All item in Prescription to database. (each item will be added locally)
+ *
  * Created by Admin on 7/26/2017.
  */
 
@@ -52,6 +65,9 @@ public class DiagnosisActivity extends AppCompatActivity {
     private DiagnosisAdapter diagnosisAdapter;
     private MedicalRecord medicalRecord;
 
+    private List<Medicine> medicineList;
+
+    private List<Prescription> prescList;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -65,6 +81,10 @@ public class DiagnosisActivity extends AppCompatActivity {
     EditText etQuantity;
     @BindView(R.id.tv_dia_patientName)
     TextView tvPatientName;
+    @BindView(R.id.etDiseaseName)
+    EditText etDiseaseName;
+    @BindView(R.id.etNote)
+    EditText etNote;
 
 
     @Override
@@ -86,7 +106,7 @@ public class DiagnosisActivity extends AppCompatActivity {
                 recyclerView.setVisibility(View.VISIBLE);
                 addPrescription(Medicine.getMedKeyByName(etMedicine.getText().toString()),
                                             Integer.parseInt(etQuantity.getText().toString()),
-                                            Integer.parseInt(etTimes.getText().toString()), "Note");
+                                            Integer.parseInt(etTimes.getText().toString()));
                 etMedicine.setText("");
                 etTimes.setText("");
                 etQuantity.setText("");
@@ -108,7 +128,15 @@ public class DiagnosisActivity extends AppCompatActivity {
     }
 
     private void prepareData(){
-        medicalRecord = getIntent().getParcelableExtra(EXTRA_PATIENT);
+        //get Medical Record
+        medicalRecord = getIntent().getParcelableExtra(EXTRA_MED_REC);
+
+        //get Medicine list
+        medicineList = Medicine.getMedicineList();
+
+        //initialize Prescription list
+        prescList = new ArrayList<>();
+
         tvPatientName.setText(User.getUserByKey(medicalRecord.getPatientKey()).getUserName());//medicalRecord.getPatientName());
         etMedicine.addTextChangedListener(mTextWatcher);
         etTimes.addTextChangedListener(mTextWatcher);
@@ -158,22 +186,29 @@ public class DiagnosisActivity extends AppCompatActivity {
         }
     }
 
-    private void addPrescription(String medicineKey, int medicineQty, int timeTake, String note){
-        writeNewPrescription(medicalRecord.getKey(), medicineKey, medicineQty, timeTake, note);
-        //diagnosisAdapter.add(medicine);
+    /**
+     * thêm từng dòng trong Đơn thuốc hiện tại vào local List<Prescrition>
+     * @param medicineKey
+     * @param medicineQty
+     * @param timeTake
+     */
+    private void addPrescription(String medicineKey, int medicineQty, int timeTake){
+        Prescription presc = new Prescription(medicalRecord.getKey(), medicineKey, medicineQty, timeTake);
+
+        prescList.add(presc);
+        diagnosisAdapter.add(presc);
         Toast.makeText(getBaseContext(), "Added successfully", Toast.LENGTH_SHORT).show();
     }
 
-    private void writeNewPrescription(String medRecKey, String medicineKey, int medicineQty, int timeTake, String note){
+    private void writeNewPrescription(Prescription newPresc){
 
-        Prescription newPresc = new Prescription(medRecKey, medicineKey, medicineQty, timeTake, note);
         Map<String, Object> postValue = newPresc.toMap();
 
         dbRefer.child(PRESCRIPTION_CHILD).push().setValue(postValue)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Toast.makeText(getApplicationContext(), "OnSuccess create Prescription", Toast.LENGTH_SHORT).show();
+                        Log.d("Test","OnSuccess create Prescription");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -182,6 +217,43 @@ public class DiagnosisActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    /***
+     * update thêm Diagnosis (chẩn đoán bệnh) vào Medical Record
+     * update isTaken = 1 (đã khám xong)
+     * update Note
+     * @param diseaseName
+     */
+    private void SubmitMedicalRecord(String diseaseName, String note){
+        medicalRecord.setDiseaseName(diseaseName);
+        medicalRecord.setIsTaken(ALREADY_TAKEN);
+        medicalRecord.setMedRecNote(note);
+
+        Map<String, Object> updateValue = medicalRecord.toMap();
+
+        Map<String, Object> childUpdate = new HashMap<>();
+        childUpdate.put(medicalRecord.getKey(), updateValue);
+
+        dbRefer.child(MEDICAL_RECORDS_CHILD).updateChildren(childUpdate)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(getApplicationContext(), "OnSuccess update CURRENT medicalRecord", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void SubmitPrescription(List<Prescription> prescList){
+        for (Prescription presc : prescList){
+            writeNewPrescription(presc);
+        }
     }
 
     protected void applyFontForToolbarTitle(Toolbar toolbar) {
@@ -217,6 +289,9 @@ public class DiagnosisActivity extends AppCompatActivity {
     }
 
     private void onClickDone() {
+        //Todo: update Medical Records here : Diagnosis + Prescription (Add All)
+        SubmitMedicalRecord(etDiseaseName.getText().toString(), etNote.getText().toString());
+        SubmitPrescription(prescList);
         finish();
     }
 

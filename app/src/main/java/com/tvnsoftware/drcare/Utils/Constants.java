@@ -17,6 +17,8 @@ public class Constants {
     //save User key currently login successfully
     public static String CURRENT_USER_KEY = "new_key";
 
+    public static final int ALREADY_TAKEN = 1;
+
     public static final String USER_CHILD = "user";
     public static final String MEDICAL_RECORDS_CHILD = "medicalRecords";
     public static final String PRESCRIPTION_CHILD = "prescription";

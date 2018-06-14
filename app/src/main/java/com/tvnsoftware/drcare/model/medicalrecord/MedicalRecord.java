@@ -12,7 +12,9 @@ import com.tvnsoftware.drcare.R;
 import com.tvnsoftware.drcare.adapter.ROLE_STATE;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.tvnsoftware.drcare.Utils.Constants.CURRENT_USER_KEY;
 import static com.tvnsoftware.drcare.Utils.Constants.MEDICAL_RECORDS_CHILD;
@@ -35,6 +37,7 @@ public class MedicalRecord implements Parcelable {
     private String PatientKey;
     private String DiseaseName;
     private String DayCreated;
+    private String medRecNote;
 
     private static List<MedicalRecord> patientList;
     private static List<MedicalRecord> medicalList;
@@ -43,18 +46,6 @@ public class MedicalRecord implements Parcelable {
 
     public interface Listener{
         void onFetchSuccess(List<MedicalRecord> resultList);
-    }
-
-    public void setListener(Listener listener){
-        this.listener = listener;
-    }
-
-    protected MedicalRecord(Parcel in) {
-        isTaken = in.readInt();
-        DoctorKey = in.readString();
-        PatientKey = in.readString();
-        DiseaseName = in.readString();
-        DayCreated = in.readString();
     }
 
     public static final Creator<MedicalRecord> CREATOR = new Creator<MedicalRecord>() {
@@ -68,6 +59,20 @@ public class MedicalRecord implements Parcelable {
             return new MedicalRecord[size];
         }
     };
+
+    public void setListener(Listener listener){
+        this.listener = listener;
+    }
+
+    protected MedicalRecord(Parcel in) {
+        Key = in.readString();
+        isTaken = in.readInt();
+        DoctorKey = in.readString();
+        PatientKey = in.readString();
+        DiseaseName = in.readString();
+        DayCreated = in.readString();
+        medRecNote = in.readString();
+    }
 
     public int getIsTaken() {
         return isTaken;
@@ -89,11 +94,26 @@ public class MedicalRecord implements Parcelable {
         return Key;
     }
 
+    public String getMedRecNote() {
+        return medRecNote;
+    }
+
+    public void setMedRecNote(String medRecNote) {
+        this.medRecNote = medRecNote;
+    }
+
     public MedicalRecord() {
     }
 
     public MedicalRecord(ROLE_STATE role, Listener listener){
         this.listener = listener;
+        if(role == ROLE_STATE.DOCTOR)
+            fetchRecordForDoctor();
+        else
+            fetchRecordForPatient();
+    }
+
+    public void reloadData(ROLE_STATE role){
         if(role == ROLE_STATE.DOCTOR)
             fetchRecordForDoctor();
         else
@@ -118,6 +138,10 @@ public class MedicalRecord implements Parcelable {
 
     public String getDiseaseName() {
         return DiseaseName;
+    }
+
+    public void setDiseaseName(String diseaseName) {
+        DiseaseName = diseaseName;
     }
 
     public String getDayCreated() {
@@ -167,7 +191,7 @@ public class MedicalRecord implements Parcelable {
                             MedicalRecord medRec = child.getValue(MedicalRecord.class);
                             medRec.setKey(child.getKey());
 
-                            if(medRec.getIsTaken() == 1 && medRec.getDoctorKey().equals(CURRENT_USER_KEY)){
+                            if(medRec.getIsTaken() == 1 && medRec.getPatientKey().equals(CURRENT_USER_KEY)){
                                 medicalList.add(medRec);
                                 Prescription.fetchPrescriptionByMedRecKey(medRec.getKey()); //get PrescriptionList by each MedicalRecord of CURRENT_USER_KEY
                             }
@@ -184,19 +208,16 @@ public class MedicalRecord implements Parcelable {
                 });
     }
 
-    private static List<Prescription> pre() {
-        List<Prescription> res = new ArrayList<>();
-        for (int i = 1; i < 5; i++) {
-            /*Prescription prescription = new Prescription();
-            prescription.setName("Paracetamol " + i);
-            prescription.setQuantity(10);
-            prescription.setUnit("Gói");
-            prescription.setUsage("2 times/day/1 unit");
-            res.add(prescription);*/
-        }
-        return res;
+    public Map<String, Object> toMap(){
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("isTaken",isTaken);
+        result.put("DoctorKey",DoctorKey);
+        result.put("PatientKey",PatientKey);
+        result.put("DiseaseName",DiseaseName);
+        result.put("DayCreated",DayCreated);
+        result.put("medRecNote", medRecNote);
+        return result;
     }
-
 
     @Override
     public int describeContents() {
@@ -205,11 +226,13 @@ public class MedicalRecord implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(Key);
         dest.writeInt(isTaken);
         dest.writeString(DoctorKey);
         dest.writeString(PatientKey);
         dest.writeString(DiseaseName);
         dest.writeString(DayCreated);
+        dest.writeString(medRecNote);
     }
 
     public List<Prescription> getPrescriptionList() {

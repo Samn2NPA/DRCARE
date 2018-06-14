@@ -42,7 +42,7 @@ public class PrescriptionAdapter extends RecyclerView.Adapter<PrescriptionAdapte
         holder.tvNameMed.setText(Medicine.getMedicineByKey(prescription.getMedicineKey()).getMedName());
         holder.tvQty.setText(prescription.getMedicineQty() + " ");
         holder.txtUnit.setText(Medicine.getMedicineByKey(prescription.getMedicineKey()).getUnit());
-        holder.txtUsage.setText(prescription.getNote());
+        holder.txtUsage.setText("note here");
     }
 
     @Override

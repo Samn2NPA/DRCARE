@@ -30,6 +30,7 @@ import butterknife.ButterKnife;
 
 import static com.tvnsoftware.drcare.Utils.Constants.DOCTOR_NAME;
 import static com.tvnsoftware.drcare.Utils.Constants.EXTRA_DOCTOR;
+import static com.tvnsoftware.drcare.Utils.Constants.EXTRA_MED_REC;
 import static com.tvnsoftware.drcare.Utils.Constants.EXTRA_PATIENT;
 import static com.tvnsoftware.drcare.Utils.Constants.PATIENT_CODE;
 import static com.tvnsoftware.drcare.Utils.Constants.PATIENT_NAME;
@@ -65,7 +66,6 @@ public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.ViewHolder
     public void setState(int roleID) {
         stateByRole = roleID == 1 ? PATIENT : ROLE_STATE.DOCTOR;
     }
-
 
     public void addPatient(MedicalRecord medicalRecord){
         this.medicalRecords.add(medicalRecord);
@@ -122,14 +122,6 @@ public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.ViewHolder
                 .bitmapTransform(new GlideCircleTransformation(context))
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(holder.ivCover);
-        holder.btnAdmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), DiagnosisActivity.class);
-                intent.putExtra("patient", medicalRecord);
-                v.getContext().startActivity(intent);
-            }
-        });
     }
 
     private void expandCardView(final ViewHolder holder, final int position){
@@ -139,6 +131,7 @@ public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.ViewHolder
         holder.tvPatientGender.setVisibility(isExpanded?View.VISIBLE:View.GONE);
         holder.btnAdmit.setVisibility(isExpanded?View.VISIBLE:View.GONE);
         holder.itemView.setActivated(isExpanded);
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -203,10 +196,8 @@ public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.ViewHolder
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(stateByRole == PATIENT){
-                        int pos = getAdapterPosition();
-                        onClick_startIntent(pos);
-                    }
+                    int pos = getAdapterPosition();
+                    onClick_startIntent(pos);
                 }
             });
 
@@ -225,10 +216,12 @@ public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.ViewHolder
         Intent intent;
         if(stateByRole == ROLE_STATE.PATIENT){
             intent = new Intent(context, DiagnosisDetailActivity.class);
-            intent.putExtra(EXTRA_PATIENT, medRec);
-        } else{
+            Log.d("Test", "EXTRA_MED_REC _ Patient screen:: " + medRec.getKey());
+            intent.putExtra(EXTRA_MED_REC, medRec);
+        } else{ //DOCTOR
             intent = new Intent(context, DiagnosisActivity.class);
-            intent.putExtra(EXTRA_DOCTOR, medRec);
+            Log.d("Test", "EXTRA_MED_REC _ Doctor screen:: " + medRec.getKey());
+            intent.putExtra(EXTRA_MED_REC, medRec);
         }
         context.startActivity(intent);
     }

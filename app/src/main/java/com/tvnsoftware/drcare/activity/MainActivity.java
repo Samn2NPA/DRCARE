@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
@@ -27,12 +28,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.tvnsoftware.drcare.R;
 import com.tvnsoftware.drcare.Utils.SpaceItemDecoration;
 import com.tvnsoftware.drcare.adapter.DoctorAdapter;
 import com.tvnsoftware.drcare.adapter.ROLE_STATE;
 import com.tvnsoftware.drcare.model.medicalrecord.MedicalRecord;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -42,7 +47,10 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.tvnsoftware.drcare.R.dimen.abc_action_button_min_width_material;
 import static com.tvnsoftware.drcare.R.dimen.abc_action_button_min_width_overflow_material;
+import static com.tvnsoftware.drcare.Utils.Constants.CURRENT_USER_KEY;
+import static com.tvnsoftware.drcare.Utils.Constants.MEDICAL_RECORDS_CHILD;
 import static com.tvnsoftware.drcare.activity.LoginActivity.EXTRA_ROLE;
+import static com.tvnsoftware.drcare.activity.LoginActivity.dbRefer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -63,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
     private DoctorAdapter doctorAdapter;
 
     private ROLE_STATE stateByRole;
+
+    List<MedicalRecord> medicalRecords;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,22 +145,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void prepareData(){
-        /*if(stateByRole == ROLE_STATE.DOCTOR){
-            List<MedicalRecord> MR = MedicalRecord.fetchRecordForDoctor();
-            Log.d("MainActivity: ", "TEST -- Prepare Data for DOCTOR: MR = " + MR.size());
-            doctorAdapter.setData(MedicalRecord.fetchRecordForDoctor()); //todo: async
-        }else {
-            List<MedicalRecord> MR = MedicalRecord.getMRHistoryList();
-            Log.d("MainActivity: ", "TEST -- Prepare Data for PATIENT: MR = " + MR.size());
-            doctorAdapter.setData(MR);
-        }*/
-
-        new MedicalRecord(stateByRole, new MedicalRecord.Listener() {
+       /* new MedicalRecord(stateByRole, new MedicalRecord.Listener() {
             @Override
             public void onFetchSuccess(List<MedicalRecord> resultList) {
                 doctorAdapter.setData(resultList);
             }
-        });
+        });*/
+
+       medicalRecords = new ArrayList<>();
+       if(stateByRole == ROLE_STATE.DOCTOR)
+           fetchMedicalRecord_Doctor();
     }
 
     protected void applyFontForToolbarTitle(Toolbar toolbar) {
@@ -167,6 +171,30 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private void fetchMedicalRecord_Doctor(){
+        dbRefer.child(MEDICAL_RECORDS_CHILD)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot child : dataSnapshot.getChildren() ){
+                            MedicalRecord medRec = child.getValue(MedicalRecord.class);
+                            medRec.setKey(child.getKey());
+
+                            if(medRec.getIsTaken() == 0 && medRec.getDoctorKey().equalsIgnoreCase(CURRENT_USER_KEY))
+                                medicalRecords.add(medRec);
+                        }
+
+                        doctorAdapter.setData(medicalRecords);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.w("Test","Med::onCancelled", databaseError.toException());
+                    }
+                });
     }
 
     protected interface SearchViewQueryCallback {

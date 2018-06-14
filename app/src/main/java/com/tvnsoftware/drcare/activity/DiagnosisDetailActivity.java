@@ -23,12 +23,14 @@ import com.tvnsoftware.drcare.R;
 import com.tvnsoftware.drcare.Utils.GlideCircleTransformation;
 import com.tvnsoftware.drcare.adapter.PrescriptionAdapter;
 import com.tvnsoftware.drcare.model.medicalrecord.MedicalRecord;
+import com.tvnsoftware.drcare.model.medicalrecord.Prescription;
 import com.tvnsoftware.drcare.model.users.User;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.tvnsoftware.drcare.Utils.Constants.EXTRA_MED_REC;
 import static com.tvnsoftware.drcare.Utils.Constants.EXTRA_PATIENT;
 
 public class DiagnosisDetailActivity extends AppCompatActivity {
@@ -66,14 +68,14 @@ public class DiagnosisDetailActivity extends AppCompatActivity {
 
         applyFontForToolbarTitle(toolbar);
 
-        medicalRecord = getIntent().getExtras().getParcelable(EXTRA_PATIENT);
+        medicalRecord = getIntent().getExtras().getParcelable(EXTRA_MED_REC);
 
         initialize();
         setUpView();
     }
 
     private void initialize(){
-        prescriptionAdapter = new PrescriptionAdapter(this,  medicalRecord.getPrescriptionList());
+        prescriptionAdapter = new PrescriptionAdapter(this,  Prescription.fetchPrescriptionByMedRecKey(medicalRecord.getKey()));
         mLayoutManager = new LinearLayoutManager(getBaseContext(), LinearLayoutManager.VERTICAL, false);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(prescriptionAdapter.getContext(),
                 mLayoutManager.getOrientation());

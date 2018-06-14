@@ -30,6 +30,11 @@ public class Medicine implements Parcelable {
 
     public Medicine(){}
 
+    public static List<Medicine> getMedicineList(){
+        medicineList = new ArrayList<>();
+        fetchMedicine();
+        return medicineList;
+    }
 
     protected Medicine(Parcel in) {
         key = in.readString();
@@ -62,13 +67,13 @@ public class Medicine implements Parcelable {
     }
 
     private static void fetchMedicine(){
-        medicineList = new ArrayList<>();
         dbRefer.child(MEDICINE_CHILD)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                         for (DataSnapshot child : dataSnapshot.getChildren() ){
+                            Log.d("Test", "Medicine - child.getvalue:: " + child.getValue().toString());
                             Medicine med = child.getValue(Medicine.class);
                             med.setKey(child.getKey());
                             medicineList.add(med);
@@ -77,7 +82,7 @@ public class Medicine implements Parcelable {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.w(TAG,"User::onCancelled", databaseError.toException());
+                        Log.w(TAG,"Medicine::onCancelled", databaseError.toException());
                     }
                 });
     }
