@@ -26,17 +26,6 @@ public class User {
 
     private static final String TAG = User.class.getSimpleName();
 
-    /*@SerializedName("USER_CODE")
-    private String Key;
-    @SerializedName("ROLE_CODE")
-    private int RoleID;
-    @SerializedName("USER_NAME")
-    private String UserName;
-    @SerializedName("USER_IMAGE")
-    private String UserImage;
-    private String UserCode;
-    private String doctorSpecial;*/
-
     public User() {
     }
 
@@ -46,8 +35,6 @@ public class User {
 
 
     //// TODO: 28-Jul-17 : nếu có lấy từ API về thì : sửa bỏ UserCode
-    //private String userCode;
-    //private int doctorPhoto;
 
     private String Key;
     private int RoleID;

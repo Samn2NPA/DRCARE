@@ -14,6 +14,8 @@ public class Constants {
     public static final String PREF_SP_AMT = "sp_amt";
     public static final String INTENT_KEY_PAGER_POSIITION = "page_position";
 
+    public static final int REQUEST_CODE = 200;
+
     //save User key currently login successfully
     public static String CURRENT_USER_KEY = "new_key";
 

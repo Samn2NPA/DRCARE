@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:parentTag="android.widget.RelativeLayout">
+
+    <TextView
+        android:id="@+id/tvStt"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:background="@drawable/draw_circle_background"
+
+        android:gravity="center"
+        android:textColor="?android:attr/colorBackground"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        tools:ignore="SpUsage"
+        tools:text="123" />
+</merge>

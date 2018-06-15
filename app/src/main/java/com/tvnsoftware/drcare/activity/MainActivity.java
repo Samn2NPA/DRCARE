@@ -36,6 +36,8 @@ import com.tvnsoftware.drcare.Utils.SpaceItemDecoration;
 import com.tvnsoftware.drcare.adapter.DoctorAdapter;
 import com.tvnsoftware.drcare.adapter.ROLE_STATE;
 import com.tvnsoftware.drcare.model.medicalrecord.MedicalRecord;
+import com.tvnsoftware.drcare.model.medicalrecord.Prescription;
+import com.tvnsoftware.drcare.model.users.Medicine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +50,9 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import static com.tvnsoftware.drcare.R.dimen.abc_action_button_min_width_material;
 import static com.tvnsoftware.drcare.R.dimen.abc_action_button_min_width_overflow_material;
 import static com.tvnsoftware.drcare.Utils.Constants.CURRENT_USER_KEY;
+import static com.tvnsoftware.drcare.Utils.Constants.EXTRA_MED_REC;
 import static com.tvnsoftware.drcare.Utils.Constants.MEDICAL_RECORDS_CHILD;
+import static com.tvnsoftware.drcare.Utils.Constants.REQUEST_CODE;
 import static com.tvnsoftware.drcare.activity.LoginActivity.EXTRA_ROLE;
 import static com.tvnsoftware.drcare.activity.LoginActivity.dbRefer;
 
@@ -122,8 +126,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
-
     private void setupWindowAnimations() {
         Slide slide = new Slide();
         slide.setDuration(1000);
@@ -136,8 +138,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setUpCardView(){
-        doctorAdapter = new DoctorAdapter(this);
+        doctorAdapter = new DoctorAdapter(this, new DoctorAdapter.Listener() {
+            @Override
+            public void onClickItemListener(MedicalRecord medRec) {
+                Intent intent = new Intent(getApplicationContext(), DiagnosisActivity.class);
+                Log.d("Test", "EXTRA_MED_REC _ Doctor screen:: " + medRec.getKey());
+                intent.putExtra(EXTRA_MED_REC, medRec);
+
+                startActivityForResult(intent, REQUEST_CODE);
+            }
+        });
+
         rvListPatient.setAdapter(doctorAdapter);
+
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getBaseContext());
         rvListPatient.setLayoutManager(linearLayoutManager);
         SpaceItemDecoration decoration = new SpaceItemDecoration(4);
@@ -155,6 +169,18 @@ public class MainActivity extends AppCompatActivity {
        medicalRecords = new ArrayList<>();
        if(stateByRole == ROLE_STATE.DOCTOR)
            fetchMedicalRecord_Doctor();
+       else{
+           fetchRecordForPatient();
+
+           Medicine.getMedicine();
+       }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == RESULT_OK && requestCode == REQUEST_CODE){
+            doctorAdapter.removeData((MedicalRecord) data.getParcelableExtra(EXTRA_MED_REC));
+        }
     }
 
     protected void applyFontForToolbarTitle(Toolbar toolbar) {
@@ -193,6 +219,31 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                         Log.w("Test","Med::onCancelled", databaseError.toException());
+                    }
+                });
+    }
+
+    private void fetchRecordForPatient(){
+        dbRefer.child(MEDICAL_RECORDS_CHILD)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot child : dataSnapshot.getChildren() ){
+                            MedicalRecord medRec = child.getValue(MedicalRecord.class);
+                            medRec.setKey(child.getKey());
+
+                            if(medRec.getIsTaken() == 1 && medRec.getPatientKey().equals(CURRENT_USER_KEY)){
+                                medicalRecords.add(medRec);
+                                Prescription.fetchPrescriptionByMedRecKey(medRec.getKey()); //get PrescriptionList by each MedicalRecord of CURRENT_USER_KEY
+                            }
+                        }
+                        doctorAdapter.setData(medicalRecords);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.w("Test","Medical Record::onCancelled", databaseError.toException());
                     }
                 });
     }

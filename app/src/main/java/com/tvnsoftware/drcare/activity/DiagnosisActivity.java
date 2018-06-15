@@ -1,6 +1,7 @@
 package com.tvnsoftware.drcare.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -68,6 +69,9 @@ public class DiagnosisActivity extends AppCompatActivity {
     private List<Medicine> medicineList;
 
     private List<Prescription> prescList;
+
+    private boolean SUBMIT_MedRec_RESULT = false;
+    private boolean SUBMIT_PRESCRIPTION_RESULT = false;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -208,12 +212,14 @@ public class DiagnosisActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        SUBMIT_PRESCRIPTION_RESULT = true;
                         Log.d("Test","OnSuccess create Prescription");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        SUBMIT_PRESCRIPTION_RESULT = false;
                         Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -240,6 +246,7 @@ public class DiagnosisActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(getApplicationContext(), "OnSuccess update CURRENT medicalRecord", Toast.LENGTH_SHORT).show();
+                        SUBMIT_MedRec_RESULT = true;
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -292,6 +299,13 @@ public class DiagnosisActivity extends AppCompatActivity {
         //Todo: update Medical Records here : Diagnosis + Prescription (Add All)
         SubmitMedicalRecord(etDiseaseName.getText().toString(), etNote.getText().toString());
         SubmitPrescription(prescList);
+
+        Intent dataParse = new Intent();
+        dataParse.putExtra(EXTRA_MED_REC, medicalRecord);
+        if(SUBMIT_MedRec_RESULT && SUBMIT_PRESCRIPTION_RESULT)
+            setResult(RESULT_OK, dataParse);
+        else
+            setResult(RESULT_CANCELED);
         finish();
     }
 

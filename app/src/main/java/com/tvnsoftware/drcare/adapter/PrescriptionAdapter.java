@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.tvnsoftware.drcare.R;
+import com.tvnsoftware.drcare.model.medicalrecord.MedicalRecord;
 import com.tvnsoftware.drcare.model.medicalrecord.Prescription;
 import com.tvnsoftware.drcare.model.users.Medicine;
 
@@ -39,10 +40,11 @@ public class PrescriptionAdapter extends RecyclerView.Adapter<PrescriptionAdapte
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Prescription prescription = prescriptionList.get(position);
-        holder.tvNameMed.setText(Medicine.getMedicineByKey(prescription.getMedicineKey()).getMedName());
-        holder.tvQty.setText(prescription.getMedicineQty() + " ");
-        holder.txtUnit.setText(Medicine.getMedicineByKey(prescription.getMedicineKey()).getUnit());
-        holder.txtUsage.setText("note here");
+        Medicine medItem = Medicine.getMedicineByKey(prescription.getMedicineKey());
+        holder.tvNameMed.setText(medItem.getMedName());
+        holder.tvQty.setText(prescription.getMedicineQty()+"");
+        holder.txtUnit.setText(medItem.getUnit());
+        holder.txtUsage.setText(prescription.getTimeTake() + " time(s)/day");
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.tvnsoftware.drcare.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -35,7 +36,9 @@ import static com.tvnsoftware.drcare.Utils.Constants.EXTRA_PATIENT;
 import static com.tvnsoftware.drcare.Utils.Constants.PATIENT_CODE;
 import static com.tvnsoftware.drcare.Utils.Constants.PATIENT_NAME;
 import static com.tvnsoftware.drcare.Utils.Constants.PATIENT_STATUS;
+import static com.tvnsoftware.drcare.Utils.Constants.REQUEST_CODE;
 import static com.tvnsoftware.drcare.adapter.ROLE_STATE.PATIENT;
+import static java.lang.String.format;
 
 /**
  * Created by Admin on 7/24/2017.
@@ -47,12 +50,23 @@ public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.ViewHolder
     private ArrayList<MedicalRecord> arrayList;
     private int mExpandedPosition = -1;
 
+    private Listener listener;
+
+    private void setListener(Listener listener){this.listener = listener;}
+
     private static ROLE_STATE stateByRole;
 
-    public DoctorAdapter(Context context) {
+    public interface Listener{
+        void onClickItemListener(MedicalRecord medicalRecord);
+    }
+
+    public DoctorAdapter(Context context, Listener listener) {
         this.medicalRecords = new ArrayList<>();
         this.context = context;
+        this.listener = listener;
     }
+
+    Activity activity = (Activity) context;
 
     /**
      * by Samn at 2:11AM 28-Jul-2017
@@ -60,6 +74,11 @@ public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.ViewHolder
     public void setData(List<MedicalRecord> medical_records){
         medicalRecords.clear();
         medicalRecords.addAll(medical_records);
+        notifyDataSetChanged();
+    }
+
+    public void removeData(MedicalRecord record){
+        medicalRecords.remove(record);
         notifyDataSetChanged();
     }
 
@@ -98,7 +117,11 @@ public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.ViewHolder
         holder.tvPatientStatus.setText("Diagnosis: " + medicalRecord.getDiseaseName());
         holder.tv_patient_time.setText(medicalRecord.getDayCreated());
 
-        Glide.with(context).load(User.getUserByKey(medicalRecord.getDoctorKey()).getUserImage()) //User.getUserByKey(medicalRecord.getDoctorKey()).getUserImage()
+        holder.tvStt.setVisibility(View.GONE);
+
+        holder.ivCover.setVisibility(View.VISIBLE);
+
+        Glide.with(context).load(User.getUserByKey(medicalRecord.getDoctorKey()).getUserImage())
                 .thumbnail(0.5f)
                 .crossFade()
                 .placeholder(R.mipmap.ic_launcher)
@@ -113,15 +136,17 @@ public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.ViewHolder
         holder.tvPatientName.setText(User.getUserByKey(medicalRecord.getPatientKey()).getUserName());
         holder.tvPatientCode.setText("ID: " + User.getUserByKey(medicalRecord.getPatientKey()).getUserCode());
         holder.tvPatientStatus.setText("Status: " + medicalRecord.getMedRecStatus());
+        //holder.tvStt.setText(medicalRecord.getStt());
+        holder.tvStt.setText(format(Integer.toString(medicalRecord.getStt()), "-"));
 
-        Glide.with(context).load(User.getUserByKey(medicalRecord.getPatientKey()).getUserImage()) //User.getUserByKey(medicalRecord.getPatientKey()).getUserImage()
+        /*Glide.with(context).load(medicalRecord.getStt()) //User.getUserByKey(medicalRecord.getPatientKey()).getUserImage()
                 .thumbnail(0.5f)
                 .crossFade()
                 .placeholder(R.mipmap.ic_launcher)
                 .error(R.mipmap.ic_launcher)
                 .bitmapTransform(new GlideCircleTransformation(context))
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(holder.ivCover);
+                .into();*/
     }
 
     private void expandCardView(final ViewHolder holder, final int position){
@@ -179,6 +204,8 @@ public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.ViewHolder
         TextView tvPatientCode;
         @BindView(R.id.iv_cover)
         ImageView ivCover;
+        @BindView(R.id.tvStt)
+        TextView tvStt;
         @BindView(R.id.tv_patient_gender)
         TextView tvPatientGender;
         @BindView(R.id.tv_patient_blood)
@@ -205,7 +232,8 @@ public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.ViewHolder
                 @Override
                 public void onClick(View view) {
                     int pos = getAdapterPosition();
-                    onClick_startIntent(pos);
+                    //onClick_startIntent(pos);
+                    listener.onClickItemListener(medicalRecords.get(pos));
                 }
             });
         }
@@ -223,6 +251,7 @@ public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.ViewHolder
             Log.d("Test", "EXTRA_MED_REC _ Doctor screen:: " + medRec.getKey());
             intent.putExtra(EXTRA_MED_REC, medRec);
         }
-        context.startActivity(intent);
+        ((Activity) context).startActivityForResult(intent, REQUEST_CODE);
     }
+
 }

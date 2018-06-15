@@ -30,4 +30,15 @@
     <!--color of letter-->
     <color name="dark_cyan">#2ca68d</color>
     <color name="darker_cyan">#208168</color>
+
+
+    <!--color of icon Stt-->
+    <color name="contactRandomColor1">#185b91</color>
+    <color name="contactRandomColor2">#114caf</color>
+    <color name="contactRandomColor3">#75979a</color>
+    <color name="contactRandomColor4">#6c9b4a</color>
+    <color name="contactRandomColor5">#503ca0</color>
+    <color name="contactRandomColor6">#e76b36</color>
+    <color name="contactRandomColor7">#bc265f</color>
+    <color name="contactRandomColor8">#7e5eba</color>
 </resources>

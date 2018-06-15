@@ -74,7 +74,7 @@ public class Prescription implements Parcelable {
                             Prescription prsc = child.getValue(Prescription.class);
                             prsc.setKey(child.getKey());
 
-                            if(prsc.getMedRecKey() == MedRecKey) /// TODO: lấy List MedRec của CURRENT_USER_KEY => get PrescriptionList theo MedRec
+                            if(prsc.getMedRecKey().equals(MedRecKey)) /// TODO: lấy List MedRec của CURRENT_USER_KEY => get PrescriptionList theo MedRec
                                 prescriptionList.add(prsc);
                         }
                         Log.d("TEST","prescription size: " + prescriptionList.size());

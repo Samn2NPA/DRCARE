@@ -32,6 +32,9 @@ public class MedicalRecord implements Parcelable {
      */
 
     private String Key;
+
+    private int Stt; //stt chờ
+
     private int isTaken; ///for STATUS of Medical Record -- DOCTOR
     private String DoctorKey;
     private String PatientKey;
@@ -96,6 +99,10 @@ public class MedicalRecord implements Parcelable {
 
     public String getMedRecNote() {
         return medRecNote;
+    }
+
+    public int getStt() {
+        return Stt;
     }
 
     public void setMedRecNote(String medRecNote) {

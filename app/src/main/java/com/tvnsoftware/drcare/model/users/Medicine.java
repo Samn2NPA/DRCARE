@@ -36,6 +36,11 @@ public class Medicine implements Parcelable {
         return medicineList;
     }
 
+    public static void getMedicine(){
+        medicineList = new ArrayList<>();
+        fetchMedicine();
+    }
+
     protected Medicine(Parcel in) {
         key = in.readString();
         medName = in.readString();
