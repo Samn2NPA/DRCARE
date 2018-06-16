@@ -68,6 +68,7 @@ public class MedicalRecord implements Parcelable {
     }
 
     protected MedicalRecord(Parcel in) {
+        Stt = in.readInt();
         Key = in.readString();
         isTaken = in.readInt();
         DoctorKey = in.readString();
@@ -217,6 +218,7 @@ public class MedicalRecord implements Parcelable {
 
     public Map<String, Object> toMap(){
         HashMap<String, Object> result = new HashMap<>();
+        result.put("Stt", Stt);
         result.put("isTaken",isTaken);
         result.put("DoctorKey",DoctorKey);
         result.put("PatientKey",PatientKey);
@@ -233,6 +235,7 @@ public class MedicalRecord implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(Stt);
         dest.writeString(Key);
         dest.writeInt(isTaken);
         dest.writeString(DoctorKey);

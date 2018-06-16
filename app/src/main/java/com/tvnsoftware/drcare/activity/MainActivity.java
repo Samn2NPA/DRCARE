@@ -166,7 +166,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
-       medicalRecords = new ArrayList<>();
        if(stateByRole == ROLE_STATE.DOCTOR)
            fetchMedicalRecord_Doctor();
        else{
@@ -205,6 +204,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                        medicalRecords = new ArrayList<>();
+
                         for (DataSnapshot child : dataSnapshot.getChildren() ){
                             MedicalRecord medRec = child.getValue(MedicalRecord.class);
                             medRec.setKey(child.getKey());
@@ -229,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                        medicalRecords = new ArrayList<>();
                         for (DataSnapshot child : dataSnapshot.getChildren() ){
                             MedicalRecord medRec = child.getValue(MedicalRecord.class);
                             medRec.setKey(child.getKey());
