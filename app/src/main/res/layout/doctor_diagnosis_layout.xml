@@ -112,7 +112,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:inputType="number"
-                    tools:text="5" />
+                    android:text="5" />
             </LinearLayout>
 
             <LinearLayout

@@ -142,7 +142,7 @@ public class DiagnosisActivity extends AppCompatActivity {
         if(checkInput == null){
             addPrescription(medicineKey, inputQuantity, inputTimes);
 
-            resetTextField();
+            postExecution();
         }
         else
             Toast.makeText(getBaseContext(), checkInput, Toast.LENGTH_SHORT).show();
@@ -184,7 +184,8 @@ public class DiagnosisActivity extends AppCompatActivity {
         return result;
     }
 
-    private void resetTextField(){
+    private void postExecution(){
+        etMedicine.requestFocus();
         etMedicine.setText("");
         etTimes.setText("");
         etQuantity.setText("");
@@ -213,20 +214,22 @@ public class DiagnosisActivity extends AppCompatActivity {
         etTimes.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if(etMedicine.getText().toString().isEmpty()){
-                    NoticeDialog("Attention", "Enter Medicine Name First!");
-                    etMedicine.requestFocus();
-                }
+
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                int quantity =  Integer.parseInt(etDayQty.getText().toString()) * Integer.parseInt(etQuantity.getText().toString());
-                etQuantity.setText(String.valueOf(quantity));
+                if(etTimes.getText().toString().isEmpty())
+                    etQuantity.setText("");
+                else {
+                    int quantity =  Integer.parseInt(etDayQty.getText().toString()) * Integer.parseInt(etTimes.getText().toString());
+                    etQuantity.setText(String.valueOf(quantity));
+                }
             }
         });
     }
@@ -416,21 +419,70 @@ public class DiagnosisActivity extends AppCompatActivity {
     }
 
     private void onClickDone() {
-        //Todo: update Medical Records here : Diagnosis + Prescription (Add All)
-        SubmitMedicalRecord(etDiseaseName.getText().toString(), etNote.getText().toString());
-        SubmitPrescription(prescList);
+        //update Medical Records here : Diagnosis + Prescription (Add All)
 
-        Intent dataParse = new Intent();
-        dataParse.putExtra(EXTRA_MED_REC, medicalRecord);
-        if(SUBMIT_MedRec_RESULT && SUBMIT_PRESCRIPTION_RESULT)
-            setResult(RESULT_OK, dataParse);
+        if(!checkNoteEmpty()){
+            NoticeDialog("Attention","Note is required!");
+            etNote.requestFocus();
+        }
         else
-            setResult(RESULT_CANCELED);
-        finish();
+            if(!checkDiagnosis()){
+                NoticeDialog("Attention","Diagnosis is required!");
+                etDiseaseName.requestFocus();
+            }
+            else
+            {
+                SubmitMedicalRecord(etDiseaseName.getText().toString(), etNote.getText().toString());
+                SubmitPrescription(prescList);
+
+                Intent dataParse = new Intent();
+                dataParse.putExtra(EXTRA_MED_REC, medicalRecord);
+                if(SUBMIT_MedRec_RESULT && SUBMIT_PRESCRIPTION_RESULT)
+                    setResult(RESULT_OK, dataParse);
+                else
+                    setResult(RESULT_CANCELED);
+                finish();
+            }
+    }
+
+    private boolean checkDiagnosis() {
+        if(etDiseaseName.getText().toString().isEmpty())
+            return false;
+        else
+            return true;
+    }
+
+    private boolean checkNoteEmpty(){
+        if(etNote.getText().toString().isEmpty())
+            return false;
+        else
+            return true;
+    }
+
+    private void confirmOnLeaving(String Content){
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText("Are you sure?")
+                .setContentText(Content)
+                .setConfirmText("Yes, I'll leave.")
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        finish();
+                        sDialog.dismissWithAnimation();
+                    }
+                })
+                .setCancelText("No, don't.")
+                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        sDialog.dismissWithAnimation();
+                    }
+                });
+        sweetAlertDialog.show();
     }
 
     @Override
     public void onBackPressed() {
-        finish();
+        confirmOnLeaving("All data can not be recovered!");
     }
 }
