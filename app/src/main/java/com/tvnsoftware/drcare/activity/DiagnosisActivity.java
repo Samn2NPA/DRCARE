@@ -1,5 +1,7 @@
 package com.tvnsoftware.drcare.activity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -29,6 +31,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.tvnsoftware.drcare.R;
 import com.tvnsoftware.drcare.Utils.DividerItemDecoration;
 import com.tvnsoftware.drcare.adapter.DiagnosisAdapter;
+import com.tvnsoftware.drcare.model.PRESCRIPTION_STATUS;
 import com.tvnsoftware.drcare.model.medicalrecord.MedicalRecord;
 import com.tvnsoftware.drcare.model.medicalrecord.Prescription;
 import com.tvnsoftware.drcare.model.users.Medicine;
@@ -41,15 +44,23 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.tvnsoftware.drcare.Utils.Constants.ALREADY_TAKEN;
 import static com.tvnsoftware.drcare.Utils.Constants.EXTRA_MED_REC;
 import static com.tvnsoftware.drcare.Utils.Constants.EXTRA_PATIENT;
+import static com.tvnsoftware.drcare.Utils.Constants.KEY_NULL;
 import static com.tvnsoftware.drcare.Utils.Constants.MEDICAL_RECORDS_CHILD;
 import static com.tvnsoftware.drcare.Utils.Constants.PRESCRIPTION_CHILD;
 import static com.tvnsoftware.drcare.activity.LoginActivity.dbRefer;
+import static com.tvnsoftware.drcare.model.PRESCRIPTION_STATUS.ALL_RIGHT;
+import static com.tvnsoftware.drcare.model.PRESCRIPTION_STATUS.ALL_WRONG;
+import static com.tvnsoftware.drcare.model.PRESCRIPTION_STATUS.WRONG_MEDICINE;
+import static com.tvnsoftware.drcare.model.PRESCRIPTION_STATUS.WRONG_QUANTITY;
+import static com.tvnsoftware.drcare.model.PRESCRIPTION_STATUS.WRONG_TIMES;
 
 /**
  * This activity allow DOCTOR make diagnosis for patient.
@@ -89,6 +100,8 @@ public class DiagnosisActivity extends AppCompatActivity {
     EditText etDiseaseName;
     @BindView(R.id.etNote)
     EditText etNote;
+    @BindView(R.id.etDayQty)
+    EditText etDayQty;
 
 
     @Override
@@ -100,22 +113,11 @@ public class DiagnosisActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         applyFontForToolbarTitle(toolbar);
 
+        setUpView();
+
         setUpRecyclerView();
         prepareData();
         checkEmptyPrescription();
-
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                recyclerView.setVisibility(View.VISIBLE);
-                addPrescription(Medicine.getMedKeyByName(etMedicine.getText().toString()),
-                                            Integer.parseInt(etQuantity.getText().toString()),
-                                            Integer.parseInt(etTimes.getText().toString()));
-                etMedicine.setText("");
-                etTimes.setText("");
-                etQuantity.setText("");
-            }
-        });
 
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                 .setDefaultFontPath("fonts/NexaLight.otf")
@@ -124,6 +126,109 @@ public class DiagnosisActivity extends AppCompatActivity {
         );
 
         setupWindowAnimations();
+    }
+
+    @OnClick(R.id.btnAdd)
+    public void onCLickBtnAdd(){
+        recyclerView.setVisibility(View.VISIBLE);
+
+        String medicineKey = Medicine.getMedKeyByName(etMedicine.getText().toString());
+        int inputTimes = Integer.parseInt(etTimes.getText().toString());
+        int inputQuantity = Integer.parseInt(etQuantity.getText().toString());
+
+
+        String checkInput = getResponseMessage(checkPreAddPrescription(medicineKey, inputTimes, inputQuantity));
+
+        if(checkInput == null){
+            addPrescription(medicineKey, inputQuantity, inputTimes);
+
+            resetTextField();
+        }
+        else
+            Toast.makeText(getBaseContext(), checkInput, Toast.LENGTH_SHORT).show();
+
+    }
+
+    private PRESCRIPTION_STATUS checkPreAddPrescription(String medicineKey, int timeTakeMed, int quantity){
+        int modQty = quantity%timeTakeMed;
+        PRESCRIPTION_STATUS result = ALL_RIGHT;
+
+        if(medicineKey.equals(KEY_NULL) && timeTakeMed > 10 && modQty != 0){
+            result = ALL_WRONG;
+        }
+        else {
+            if(medicineKey.equals(KEY_NULL)) //check get Medicine Key by medName
+                result = WRONG_MEDICINE;
+            else
+            if(timeTakeMed > 10)    //check time to Take medicine
+                result = WRONG_TIMES;
+            else
+            {
+                Log.d("Test:: ", "modQty = quantity%timeTakeMed = " + quantity + " % " + timeTakeMed + " = " + modQty);
+                if(modQty != 0)     //check quantity
+                    result = WRONG_QUANTITY;
+            }
+        };
+        return result;
+    }
+
+    private String getResponseMessage(PRESCRIPTION_STATUS status){
+        String result;
+        switch (status){
+            case ALL_WRONG: result = getResources().getString(R.string.ALL_WRONG_response); break;
+            case WRONG_MEDICINE: result = getResources().getString(R.string.WRONG_MEDICINE_response); break;
+            case WRONG_TIMES: result = getResources().getString(R.string.WRONG_TIMES_response); break;
+            case WRONG_QUANTITY: result = getResources().getString(R.string.WRONG_QUANTITY_response); break;
+            default: result = null;
+        }
+        return result;
+    }
+
+    private void resetTextField(){
+        etMedicine.setText("");
+        etTimes.setText("");
+        etQuantity.setText("");
+    }
+
+    private void setUpView(){
+        etMedicine.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(etDayQty.getText().toString().isEmpty()){
+                    NoticeDialog("Attention", "Enter Day Quantity First!");
+                    etDayQty.requestFocus();
+                }
+            }
+        });
+
+        etTimes.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(etMedicine.getText().toString().isEmpty()){
+                    NoticeDialog("Attention", "Enter Medicine Name First!");
+                    etMedicine.requestFocus();
+                }
+            }
+        });
+        etTimes.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if(etMedicine.getText().toString().isEmpty()){
+                    NoticeDialog("Attention", "Enter Medicine Name First!");
+                    etMedicine.requestFocus();
+                }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                int quantity =  Integer.parseInt(etDayQty.getText().toString()) * Integer.parseInt(etQuantity.getText().toString());
+                etQuantity.setText(String.valueOf(quantity));
+            }
+        });
     }
 
     @Override
@@ -151,6 +256,20 @@ public class DiagnosisActivity extends AppCompatActivity {
         Fade fade = new Fade();
         fade.setDuration(1000);
         getWindow().setEnterTransition(fade);
+    }
+
+    private void NoticeDialog(String title, String content){
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText(title)
+                .setContentText(content)
+                .setConfirmText("OK")
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        sDialog.dismissWithAnimation();
+                    }
+                });
+        sweetAlertDialog.show();
     }
 
     private void setUpRecyclerView(){
@@ -183,8 +302,9 @@ public class DiagnosisActivity extends AppCompatActivity {
         String medicineTimes = etTimes.getText().toString();
         String medicineQuantity = etQuantity.getText().toString();
 
-        if (medicineName.isEmpty() || medicineQuantity.isEmpty() || medicineTimes.isEmpty()){
+        if (medicineName.isEmpty() || medicineQuantity.isEmpty() || medicineTimes.isEmpty()){{
             btnAdd.setEnabled(false);
+        }
         } else {
             btnAdd.setEnabled(true);
         }

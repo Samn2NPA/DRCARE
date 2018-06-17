@@ -3,7 +3,6 @@ package com.tvnsoftware.drcare.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +18,7 @@ import com.tvnsoftware.drcare.R;
 import com.tvnsoftware.drcare.Utils.GlideCircleTransformation;
 import com.tvnsoftware.drcare.activity.DiagnosisActivity;
 import com.tvnsoftware.drcare.activity.DiagnosisDetailActivity;
+import com.tvnsoftware.drcare.model.ROLE_STATE;
 import com.tvnsoftware.drcare.model.medicalrecord.MedicalRecord;
 import com.tvnsoftware.drcare.model.users.User;
 
@@ -29,15 +29,9 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.tvnsoftware.drcare.Utils.Constants.DOCTOR_NAME;
-import static com.tvnsoftware.drcare.Utils.Constants.EXTRA_DOCTOR;
 import static com.tvnsoftware.drcare.Utils.Constants.EXTRA_MED_REC;
-import static com.tvnsoftware.drcare.Utils.Constants.EXTRA_PATIENT;
-import static com.tvnsoftware.drcare.Utils.Constants.PATIENT_CODE;
-import static com.tvnsoftware.drcare.Utils.Constants.PATIENT_NAME;
-import static com.tvnsoftware.drcare.Utils.Constants.PATIENT_STATUS;
 import static com.tvnsoftware.drcare.Utils.Constants.REQUEST_CODE;
-import static com.tvnsoftware.drcare.adapter.ROLE_STATE.PATIENT;
+import static com.tvnsoftware.drcare.model.ROLE_STATE.PATIENT;
 import static java.lang.String.format;
 
 /**

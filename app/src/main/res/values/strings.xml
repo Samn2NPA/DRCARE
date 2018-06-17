@@ -14,4 +14,12 @@
     <string name="label_but_start">Start</string>
     <string name="title_activity_alarm">Your Alarm</string>
     <string name="diagnosis_details">Diagnosis Details</string>
+
+    <!--response message of Prescription Status-->
+    <string name="ALL_RIGHT_response">You are good to go!</string>
+    <string name="ALL_WRONG_response">All input is invalid!</string>
+    <string name="WRONG_TIMES_response">Time to take Medicine is Invalid!</string>
+    <string name="WRONG_QUANTITY_response">Quantity is invalid!</string>
+    <string name="WRONG_MEDICINE_response">Can not get Medicine key! Check Internet Connection!</string>
+    <string name="NOTE_REQUIRED_response">Note is required!</string>
 </resources>

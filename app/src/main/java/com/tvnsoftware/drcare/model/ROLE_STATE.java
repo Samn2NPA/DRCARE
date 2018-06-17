@@ -1,4 +1,4 @@
-package com.tvnsoftware.drcare.adapter;
+package com.tvnsoftware.drcare.model;
 
 /**
  * Created by Samn on 28-Jul-17.

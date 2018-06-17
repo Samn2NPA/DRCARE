@@ -12,6 +12,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.tvnsoftware.drcare.Utils.Constants.KEY_NULL;
 import static com.tvnsoftware.drcare.Utils.Constants.MEDICINE_CHILD;
 import static com.tvnsoftware.drcare.activity.LoginActivity.dbRefer;
 
@@ -104,7 +105,7 @@ public class Medicine implements Parcelable {
         for(Medicine item : medicineList)
             if (item.getMedName().equalsIgnoreCase(medName))
                 return item.getKey();
-        return "KeyNull";
+        return KEY_NULL;
     }
 
 

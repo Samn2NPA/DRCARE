@@ -9,7 +9,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.tvnsoftware.drcare.R;
-import com.tvnsoftware.drcare.adapter.ROLE_STATE;
+import com.tvnsoftware.drcare.model.ROLE_STATE;
 
 import java.util.ArrayList;
 import java.util.HashMap;

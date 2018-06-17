@@ -181,7 +181,7 @@ public class LoginActivity extends AppCompatActivity {
 //    }
 
 
-    private void transferToPage(int userRole) {
+    /*private void transferToPage(int userRole) {
         //1: Doctor page
         if (1 == userRole) {
             transferToDoctor();
@@ -200,6 +200,6 @@ public class LoginActivity extends AppCompatActivity {
         //Doctor activity
         Intent i = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(i);
-    }
+    }*/
 
 }

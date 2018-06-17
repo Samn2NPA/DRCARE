@@ -34,7 +34,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.tvnsoftware.drcare.R;
 import com.tvnsoftware.drcare.Utils.SpaceItemDecoration;
 import com.tvnsoftware.drcare.adapter.DoctorAdapter;
-import com.tvnsoftware.drcare.adapter.ROLE_STATE;
+import com.tvnsoftware.drcare.model.ROLE_STATE;
 import com.tvnsoftware.drcare.model.medicalrecord.MedicalRecord;
 import com.tvnsoftware.drcare.model.medicalrecord.Prescription;
 import com.tvnsoftware.drcare.model.users.Medicine;

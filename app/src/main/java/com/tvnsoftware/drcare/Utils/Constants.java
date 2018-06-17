@@ -31,6 +31,9 @@ public class Constants {
     public static final String EXTRA_PATIENT = "EXTRA_PATIENT";
     public static final String EXTRA_DOCTOR = "EXTRA_DOCTOR";
 
+    //get Key, but Can't because of wrong input
+    public static final String KEY_NULL = "KeyNull";
+
     //dummy
     public static final String PATIENT_NAME = "";
     public static final String DOCTOR_NAME = "";
